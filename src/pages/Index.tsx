@@ -23,7 +23,7 @@ const Index = () => {
   const [preseededAdventures, setPreseededAdventures] = useState<PreseededAdventure[]>([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, signInWithGoogle } = useAuth()
   const { toast } = useToast()
 
   useEffect(() => {
@@ -32,15 +32,26 @@ const Index = () => {
 
   const fetchPreseededAdventures = async () => {
     try {
+      console.log('Fetching preseeded adventures...')
       const { data, error } = await supabase
         .from('preseeded_adventures')
         .select('*')
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        console.error('Error fetching preseeded adventures:', error)
+        throw error
+      }
+      
+      console.log('Preseeded adventures fetched:', data)
       setPreseededAdventures(data || [])
     } catch (error) {
       console.error('Error fetching preseeded adventures:', error)
+      toast({
+        title: "Error",
+        description: "Failed to load adventure options.",
+        variant: "destructive"
+      })
     } finally {
       setLoading(false)
     }
@@ -48,11 +59,10 @@ const Index = () => {
 
   const createNewAdventure = async (title: string, starterMessage?: string) => {
     if (!user) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to create adventures.",
-        variant: "destructive"
-      })
+      console.log('User not authenticated, redirecting to sign in')
+      // Store the adventure details for after sign-in
+      localStorage.setItem('pendingAdventure', JSON.stringify({ title, starterMessage }))
+      await signInWithGoogle()
       return
     }
 
@@ -81,6 +91,7 @@ const Index = () => {
 
       navigate(`/adventures/${adventure.id}`)
     } catch (error) {
+      console.error('Error creating adventure:', error)
       toast({
         title: "Error",
         description: "Failed to create adventure.",
@@ -100,6 +111,18 @@ const Index = () => {
   const handlePreseededAdventureClick = (adventure: PreseededAdventure) => {
     createNewAdventure(adventure.title, adventure.starter_message)
   }
+
+  // Check for pending adventure after sign-in
+  useEffect(() => {
+    if (user) {
+      const pendingAdventure = localStorage.getItem('pendingAdventure')
+      if (pendingAdventure) {
+        const { title, starterMessage } = JSON.parse(pendingAdventure)
+        localStorage.removeItem('pendingAdventure')
+        createNewAdventure(title, starterMessage)
+      }
+    }
+  }, [user])
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,6 +170,18 @@ const Index = () => {
                 />
               ))}
             </div>
+          </div>
+        )}
+
+        {loading && (
+          <div className="text-center">
+            <p className="text-muted-foreground">Loading adventures...</p>
+          </div>
+        )}
+
+        {!loading && preseededAdventures.length === 0 && (
+          <div className="text-center">
+            <p className="text-muted-foreground">No adventures available at the moment.</p>
           </div>
         )}
       </main>
