@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Header } from '@/components/Header'
@@ -7,7 +6,7 @@ import { ChatMessage } from '@/components/ChatMessage'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Send, Loader2 } from 'lucide-react'
+import { ArrowUp, Loader2 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { useToast } from '@/hooks/use-toast'
@@ -37,6 +36,7 @@ const AdventureChat = () => {
   const [currentInput, setCurrentInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [messagesLoading, setMessagesLoading] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -190,6 +190,8 @@ const AdventureChat = () => {
           onAdventureSelect={(id) => navigate(`/adventures/${id}`)}
           onNewAdventure={createNewAdventure}
           onRefreshAdventures={fetchAdventures}
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
         />
         
         <div className="flex-1 flex flex-col">
@@ -220,21 +222,26 @@ const AdventureChat = () => {
                 </div>
               </ScrollArea>
               
-              <div className="border-t p-4">
+              <div className="p-4">
                 <form onSubmit={sendMessage} className="max-w-4xl mx-auto">
-                  <div className="flex space-x-2">
+                  <div className="relative flex items-center bg-muted rounded-3xl px-4 py-3">
                     <Input
                       placeholder="What do you do next?"
                       value={currentInput}
                       onChange={(e) => setCurrentInput(e.target.value)}
                       disabled={isLoading}
-                      className="flex-1"
+                      className="flex-1 border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-base"
                     />
-                    <Button type="submit" disabled={!currentInput.trim() || isLoading}>
+                    <Button 
+                      type="submit" 
+                      disabled={!currentInput.trim() || isLoading}
+                      size="icon"
+                      className="ml-2 h-8 w-8 rounded-full shrink-0"
+                    >
                       {isLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <Send className="h-4 w-4" />
+                        <ArrowUp className="h-4 w-4" />
                       )}
                     </Button>
                   </div>
