@@ -9,7 +9,165 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      adventures: {
+        Row: {
+          created_at: string
+          id: string
+          preseeded_adventure_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          preseeded_adventure_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          preseeded_adventure_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adventures_preseeded_adventure_id_fkey"
+            columns: ["preseeded_adventure_id"]
+            isOneToOne: false
+            referencedRelation: "preseeded_adventures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          adventure_id: string
+          content: string
+          created_at: string
+          id: string
+          sender: string
+        }
+        Insert: {
+          adventure_id: string
+          content: string
+          created_at?: string
+          id?: string
+          sender: string
+        }
+        Update: {
+          adventure_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          sender?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_adventure_id_fkey"
+            columns: ["adventure_id"]
+            isOneToOne: false
+            referencedRelation: "adventures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      preseeded_adventures: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          starter_message: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          image_url?: string | null
+          starter_message: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          starter_message?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          subscription_tier: string
+          token_usage: number
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          subscription_tier?: string
+          token_usage?: number
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          subscription_tier?: string
+          token_usage?: number
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      token_usage_logs: {
+        Row: {
+          adventure_id: string | null
+          created_at: string
+          id: string
+          model_used: string
+          tokens_used: number
+          user_id: string
+        }
+        Insert: {
+          adventure_id?: string | null
+          created_at?: string
+          id?: string
+          model_used: string
+          tokens_used: number
+          user_id: string
+        }
+        Update: {
+          adventure_id?: string | null
+          created_at?: string
+          id?: string
+          model_used?: string
+          tokens_used?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "token_usage_logs_adventure_id_fkey"
+            columns: ["adventure_id"]
+            isOneToOne: false
+            referencedRelation: "adventures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
