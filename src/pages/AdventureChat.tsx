@@ -85,7 +85,14 @@ const AdventureChat = () => {
         .order('created_at', { ascending: true })
 
       if (error) throw error
-      setMessages(data || [])
+      
+      // Type the messages properly by casting sender to the expected union type
+      const typedMessages: Message[] = (data || []).map(msg => ({
+        ...msg,
+        sender: msg.sender as 'user' | 'ai'
+      }))
+      
+      setMessages(typedMessages)
     } catch (error) {
       console.error('Error fetching messages:', error)
     } finally {
