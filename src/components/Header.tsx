@@ -11,6 +11,8 @@ import {
 import { useTheme } from 'next-themes'
 import { useAuth } from '@/hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDiceD20 } from '@fortawesome/free-solid-svg-icons';
 
 export const Header = () => {
   const { theme, setTheme } = useTheme()
@@ -24,7 +26,7 @@ export const Header = () => {
           className="flex items-center space-x-2 cursor-pointer"
           onClick={() => navigate('/')}
         >
-          <Dices className="h-6 w-6 text-primary" />
+          <FontAwesomeIcon icon={faDiceD20} className="h-6 w-6 text-primary" />
           <span className="font-bold text-xl">Bardly</span>
         </div>
         
