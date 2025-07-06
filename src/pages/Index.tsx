@@ -5,6 +5,7 @@ import { Header } from '@/components/Header'
 import { AdventureTile } from '@/components/AdventureTile'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { ArrowUp } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { useToast } from '@/hooks/use-toast'
@@ -106,20 +107,25 @@ const Index = () => {
       
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <h1 className="text-6xl font-bold mb-8 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-6xl font-bold mb-12 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
             Bardly
           </h1>
           
           <form onSubmit={handleNewAdventureSubmit} className="max-w-2xl mx-auto mb-8">
-            <div className="flex space-x-2">
+            <div className="bg-muted rounded-3xl px-4 py-3 flex items-center space-x-3 shadow-sm border">
               <Input
                 placeholder="Start a new adventure..."
                 value={newAdventureInput}
                 onChange={(e) => setNewAdventureInput(e.target.value)}
-                className="text-lg py-6"
+                className="flex-1 border-0 bg-transparent text-lg placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
               />
-              <Button type="submit" size="lg" disabled={!newAdventureInput.trim()}>
-                Begin
+              <Button 
+                type="submit" 
+                size="icon"
+                className="rounded-full w-8 h-8 p-0"
+                disabled={!newAdventureInput.trim()}
+              >
+                <ArrowUp className="h-4 w-4" />
               </Button>
             </div>
           </form>

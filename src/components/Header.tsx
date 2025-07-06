@@ -1,5 +1,5 @@
 
-import { Moon, Sun, Dice6, ChevronDown } from 'lucide-react'
+import { Moon, Sun, Dices, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -24,7 +24,7 @@ export const Header = () => {
           className="flex items-center space-x-2 cursor-pointer"
           onClick={() => navigate('/')}
         >
-          <Dice6 className="h-6 w-6 text-primary" />
+          <Dices className="h-6 w-6 text-primary" />
           <span className="font-bold text-xl">Bardly</span>
         </div>
         
