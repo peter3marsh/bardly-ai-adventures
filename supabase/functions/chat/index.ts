@@ -1,4 +1,3 @@
-
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsHeaders } from '../_shared/cors.ts'
 
@@ -113,12 +112,19 @@ export async function handler(req: Request) {
         model_used: 'gpt-4o-mini'
       })
 
-    // Update user's total token usage
+    // Get current token usage
+    const { data: profile } = await supabaseClient
+      .from('profiles')
+      .select('token_usage')
+      .eq('id', user.id)
+      .single()
+
+    const currentTokenUsage = profile?.token_usage || 0
+    const newTokenUsage = currentTokenUsage + (openaiData.usage.total_tokens || 0)
+
     await supabaseClient
       .from('profiles')
-      .update({
-        token_usage: supabaseClient.raw(`token_usage + ${openaiData.usage.total_tokens}`)
-      })
+      .update({ token_usage: newTokenUsage })
       .eq('id', user.id)
 
     return new Response(
