@@ -1,3 +1,4 @@
+
 import { Moon, Sun, User, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -12,41 +13,17 @@ import { useAuth } from '@/hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDiceD20 } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
 
 export const Header = () => {
   const { theme, setTheme } = useTheme()
   const { user, signInWithGoogle, signOut } = useAuth()
   const navigate = useNavigate()
-  const [loadingAdventure, setLoadingAdventure] = useState(false)
 
-  const handleMyAdventures = async () => {
-    if (!user) {
-      signInWithGoogle()
-      return
-    }
-    setLoadingAdventure(true)
-    // Fetch the user's most recent adventure
-    const { data, error } = await supabase
-      .from('adventures')
-      .select('id')
-      .eq('user_id', user.id)
-      .order('updated_at', { ascending: false })
-      .limit(1)
-      .single()
-    setLoadingAdventure(false)
-    if (error || !data) {
-      // If no adventure exists, create a new one
-      const { data: newAdventure, error: createError } = await supabase
-        .from('adventures')
-        .insert({ user_id: user.id, title: 'New Adventure' })
-        .select()
-        .single()
-      if (createError || !newAdventure) return
-      navigate(`/adventures/${newAdventure.id}`)
+  const handleMyAdventures = () => {
+    if (user) {
+      navigate('/adventures')
     } else {
-      navigate(`/adventures/${data.id}`)
+      signInWithGoogle()
     }
   }
 
