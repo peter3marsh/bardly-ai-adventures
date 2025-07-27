@@ -197,7 +197,7 @@ const AdventureChat = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
       <div className="flex flex-1 overflow-hidden">
