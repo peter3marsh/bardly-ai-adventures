@@ -197,10 +197,10 @@ const AdventureChat = () => {
   }
 
   return (
-    <div className="h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
-      <div className="flex flex-1 overflow-hidden pt-14">
+      <div className="flex flex-1 overflow-hidden">
         <AdventureSidebar
           adventures={adventures}
           currentAdventureId={adventureId}
