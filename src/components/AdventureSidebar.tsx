@@ -238,11 +238,6 @@ export const AdventureSidebar = ({
         </div>
       </ScrollArea>
 
-      <div className="p-3 border-t">
-        <Button variant="outline" className="w-full text-sm" disabled>
-          Subscribe for more adventures
-        </Button>
-      </div>
     </div>
   )
 }
