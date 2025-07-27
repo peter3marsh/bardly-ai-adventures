@@ -85,7 +85,7 @@ const Index = () => {
           .insert({
             adventure_id: adventure.id,
             content: starterMessage,
-            sender: 'user'
+            sender: 'ai'
           })
       }
 
