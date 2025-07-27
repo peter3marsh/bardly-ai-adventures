@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useTheme } from 'next-themes'
 import { useAuth } from '@/hooks/useAuth'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDiceD20 } from '@fortawesome/free-solid-svg-icons';
 
@@ -18,6 +18,9 @@ export const Header = () => {
   const { theme, setTheme } = useTheme()
   const { user, signInWithGoogle, signOut } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  
+  const isAdventuresPage = location.pathname.startsWith('/adventures')
 
   const handleMyAdventures = () => {
     if (user) {
@@ -28,7 +31,7 @@ export const Header = () => {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className={isAdventuresPage ? "border-b bg-background" : "sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"}>
       <div className="container flex h-14 items-center justify-between">
         <div 
           className="flex items-center space-x-2 cursor-pointer"
