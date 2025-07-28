@@ -197,10 +197,10 @@ const AdventureChat = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      
-      <div className="flex flex-1 overflow-hidden">
+
+      <div className="flex flex-1 h-[calc(100vh-4rem)] overflow-hidden">
         <AdventureSidebar
           adventures={adventures}
           currentAdventureId={adventureId}
@@ -215,7 +215,7 @@ const AdventureChat = () => {
           isOpen={sidebarOpen}
           onToggle={() => setSidebarOpen(!sidebarOpen)}
         />
-        
+
         <div className="flex-1 flex flex-col">
           <>
             <ScrollArea className="flex-1 p-6">
@@ -230,10 +230,9 @@ const AdventureChat = () => {
                       {adventureId ? "Start your adventure!" : "Ready to begin?"}
                     </h3>
                     <p>
-                      {adventureId 
-                        ? "Send a message to begin your D&D journey." 
-                        : "Send a message to create a new adventure and start your D&D journey."
-                      }
+                      {adventureId
+                        ? "Send a message to begin your D&D journey."
+                        : "Send a message to create a new adventure and start your D&D journey."}
                     </p>
                   </div>
                 ) : (
@@ -249,7 +248,7 @@ const AdventureChat = () => {
                 <div ref={messagesEndRef} />
               </div>
             </ScrollArea>
-            
+
             <div className="p-4">
               <form onSubmit={sendMessage} className="max-w-4xl mx-auto">
                 <div className="relative flex items-center bg-muted rounded-3xl px-4 py-3">
@@ -260,8 +259,8 @@ const AdventureChat = () => {
                     disabled={isLoading}
                     className="flex-1 border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-base"
                   />
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     disabled={!currentInput.trim() || isLoading}
                     size="icon"
                     className="ml-2 h-8 w-8 rounded-full shrink-0"
