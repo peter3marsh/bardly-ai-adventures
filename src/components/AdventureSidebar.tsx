@@ -110,7 +110,7 @@ export const AdventureSidebar = ({
 
   if (!isOpen) {
     return (
-      <div className="w-12 border-r bg-background flex flex-col h-screen">
+      <div className="w-12 border-r bg-background flex flex-col h-full">
         <div className="p-2">
           <Button 
             variant="ghost" 
@@ -126,7 +126,7 @@ export const AdventureSidebar = ({
   }
 
   return (
-    <div className="w-80 border-r bg-background flex flex-col h-screen">
+    <div className="w-80 border-r bg-background flex flex-col h-full">
       <div className="p-3 space-y-2">
         <div className="flex items-center justify-end">
           <Button 
