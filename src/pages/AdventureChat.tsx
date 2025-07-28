@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Header } from '@/components/Header'
@@ -30,7 +31,7 @@ const AdventureChat = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { toast } = useToast()
-
+  
   const [messages, setMessages] = useState<Message[]>([])
   const [adventures, setAdventures] = useState<Adventure[]>([])
   const [currentInput, setCurrentInput] = useState('')
@@ -87,12 +88,13 @@ const AdventureChat = () => {
         .order('created_at', { ascending: true })
 
       if (error) throw error
-
+      
+      // Type the messages properly by casting sender to the expected union type
       const typedMessages: Message[] = (data || []).map(msg => ({
         ...msg,
         sender: msg.sender as 'user' | 'ai'
       }))
-
+      
       setMessages(typedMessages)
     } catch (error) {
       console.error('Error fetching messages:', error)
@@ -115,7 +117,7 @@ const AdventureChat = () => {
         .single()
 
       if (error) throw error
-
+      
       fetchAdventures()
       return adventure
     } catch (error) {
@@ -139,6 +141,7 @@ const AdventureChat = () => {
     try {
       let currentAdventureId = adventureId
 
+      // If no adventure is selected, create a new one
       if (!currentAdventureId) {
         const newAdventure = await createNewAdventure()
         if (!newAdventure) {
@@ -158,13 +161,15 @@ const AdventureChat = () => {
 
       if (response.error) throw response.error
 
+      // Refresh messages to show the new conversation
       await fetchMessages()
-
+      
+      // Update adventure timestamp
       await supabase
         .from('adventures')
         .update({ updated_at: new Date().toISOString() })
         .eq('id', currentAdventureId)
-
+        
       fetchAdventures()
     } catch (error) {
       toast({
@@ -179,8 +184,8 @@ const AdventureChat = () => {
 
   if (!user) {
     return (
-      <div className="h-screen bg-background">
-        <Header className="sticky top-0 z-50 h-16" />
+      <div className="min-h-screen bg-background">
+        <Header />
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <h2 className="text-2xl font-semibold mb-4">Sign in to continue</h2>
@@ -192,10 +197,10 @@ const AdventureChat = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      <Header className="sticky top-0 z-50 h-16" />
+    <div className="flex flex-col min-h-screen bg-background">
+      <Header />
 
-      <div className="flex flex-1 overflow-hidden h-[calc(100vh-4rem)]">
+      <div className="flex flex-1 h+[calc(100vh-4rem)] overflow-hidden">
         <AdventureSidebar
           adventures={adventures}
           currentAdventureId={adventureId}
@@ -212,62 +217,64 @@ const AdventureChat = () => {
         />
 
         <div className="flex-1 flex flex-col">
-          <ScrollArea className="flex-1 p-6">
-            <div className="max-w-4xl mx-auto">
-              {messagesLoading ? (
-                <div className="flex items-center justify-center h-32">
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                </div>
-              ) : messages.length === 0 ? (
-                <div className="text-center text-muted-foreground mt-20">
-                  <h3 className="text-lg font-medium mb-2">
-                    {adventureId ? "Start your adventure!" : "Ready to begin?"}
-                  </h3>
-                  <p>
-                    {adventureId 
-                      ? "Send a message to begin your D&D journey." 
-                      : "Send a message to create a new adventure and start your D&D journey."}
-                  </p>
-                </div>
-              ) : (
-                messages.map((message) => (
-                  <ChatMessage
-                    key={message.id}
-                    content={message.content}
-                    isUser={message.sender === 'user'}
-                    timestamp={message.created_at}
-                  />
-                ))
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-          </ScrollArea>
-
-          <div className="p-4">
-            <form onSubmit={sendMessage} className="max-w-4xl mx-auto">
-              <div className="relative flex items-center bg-muted rounded-3xl px-4 py-3">
-                <Input
-                  placeholder={adventureId ? "What do you do next?" : "Start a new adventure..."}
-                  value={currentInput}
-                  onChange={(e) => setCurrentInput(e.target.value)}
-                  disabled={isLoading}
-                  className="flex-1 border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-base"
-                />
-                <Button 
-                  type="submit" 
-                  disabled={!currentInput.trim() || isLoading}
-                  size="icon"
-                  className="ml-2 h-8 w-8 rounded-full shrink-0"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <ArrowUp className="h-4 w-4" />
-                  )}
-                </Button>
+          <>
+            <ScrollArea className="flex-1 p-6">
+              <div className="max-w-4xl mx-auto">
+                {messagesLoading ? (
+                  <div className="flex items-center justify-center h-32">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  </div>
+                ) : messages.length === 0 ? (
+                  <div className="text-center text-muted-foreground mt-20">
+                    <h3 className="text-lg font-medium mb-2">
+                      {adventureId ? "Start your adventure!" : "Ready to begin?"}
+                    </h3>
+                    <p>
+                      {adventureId
+                        ? "Send a message to begin your D&D journey."
+                        : "Send a message to create a new adventure and start your D&D journey."}
+                    </p>
+                  </div>
+                ) : (
+                  messages.map((message) => (
+                    <ChatMessage
+                      key={message.id}
+                      content={message.content}
+                      isUser={message.sender === 'user'}
+                      timestamp={message.created_at}
+                    />
+                  ))
+                )}
+                <div ref={messagesEndRef} />
               </div>
-            </form>
-          </div>
+            </ScrollArea>
+
+            <div className="p-4">
+              <form onSubmit={sendMessage} className="max-w-4xl mx-auto">
+                <div className="relative flex items-center bg-muted rounded-3xl px-4 py-3">
+                  <Input
+                    placeholder={adventureId ? "What do you do next?" : "Start a new adventure..."}
+                    value={currentInput}
+                    onChange={(e) => setCurrentInput(e.target.value)}
+                    disabled={isLoading}
+                    className="flex-1 border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-base"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={!currentInput.trim() || isLoading}
+                    size="icon"
+                    className="ml-2 h-8 w-8 rounded-full shrink-0"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <ArrowUp className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </>
         </div>
       </div>
     </div>
