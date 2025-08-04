@@ -131,7 +131,7 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
           <h1 className="text-6xl font-bold mb-12 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-            Bardly
+            Bardlore
           </h1>
           
           <form onSubmit={handleNewAdventureSubmit} className="max-w-2xl mx-auto mb-8">

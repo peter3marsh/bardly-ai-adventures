@@ -35,7 +35,7 @@ export const Header = () => {
           onClick={() => navigate('/')}
         >
           <FontAwesomeIcon icon={faDiceD20} className="h-6 w-6 text-primary" />
-          <span className="font-bold text-xl">Bardly</span>
+          <span className="font-bold text-xl">Bardlore</span>
         </div>
         
         <div className="flex items-center space-x-2">
