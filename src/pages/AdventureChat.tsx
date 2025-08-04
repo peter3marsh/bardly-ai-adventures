@@ -11,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { ArrowUp, Loader2 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
+import { useTokenUsage } from '@/hooks/useTokenUsage'
 import { useToast } from '@/hooks/use-toast'
 
 interface Message {
@@ -30,7 +31,8 @@ interface Adventure {
 const AdventureChat = () => {
   const { adventureId } = useParams<{ adventureId: string }>()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, subscription, subscriptionLoading } = useAuth()
+  const { tokenUsage, loading: tokenLoading } = useTokenUsage()
   const { toast } = useToast()
   
   const [messages, setMessages] = useState<Message[]>([])
@@ -56,6 +58,18 @@ const AdventureChat = () => {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  // Check for token limit on page load
+  useEffect(() => {
+    if (user && !subscriptionLoading && !tokenLoading) {
+      const TOKEN_LIMIT = 100000
+      const isSubscribed = subscription?.subscribed || false
+      
+      if (!isSubscribed && tokenUsage >= TOKEN_LIMIT) {
+        setShowPaywall(true)
+      }
+    }
+  }, [user, subscription, subscriptionLoading, tokenUsage, tokenLoading])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
