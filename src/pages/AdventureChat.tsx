@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Header } from '@/components/Header'
 import { AdventureSidebar } from '@/components/AdventureSidebar'
 import { ChatMessage } from '@/components/ChatMessage'
+import { PaywallScreen } from '@/components/PaywallScreen'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -38,6 +39,7 @@ const AdventureChat = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [messagesLoading, setMessagesLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [showPaywall, setShowPaywall] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -159,7 +161,14 @@ const AdventureChat = () => {
         }
       })
 
-      if (response.error) throw response.error
+      if (response.error) {
+        // Check if it's a token limit error
+        if (response.error.error === 'LIMIT_EXCEEDED') {
+          setShowPaywall(true)
+          return
+        }
+        throw response.error
+      }
 
       // Refresh messages to show the new conversation
       await fetchMessages()
@@ -216,7 +225,10 @@ const AdventureChat = () => {
           onToggle={() => setSidebarOpen(!sidebarOpen)}
         />
 
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col relative">
+          {showPaywall && (
+            <PaywallScreen onClose={() => setShowPaywall(false)} />
+          )}
           <>
             <ScrollArea className="flex-1 p-6">
               <div className="max-w-4xl mx-auto">

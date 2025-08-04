@@ -4,9 +4,11 @@ import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, Crown, Settings } from 'lucide-react'
+import { Progress } from '@/components/ui/progress'
+import { Loader2, Crown, Settings, Zap } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { Header } from '@/components/Header'
+import { useTokenUsage } from '@/hooks/useTokenUsage'
 
 interface SubscriptionData {
   subscribed: boolean
@@ -17,9 +19,12 @@ interface SubscriptionData {
 export default function SettingsPage() {
   const { user } = useAuth()
   const { toast } = useToast()
+  const { tokenUsage, loading: tokenLoading, refreshTokenUsage } = useTokenUsage()
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
+
+  const TOKEN_LIMIT = 100000
 
   const checkSubscription = async () => {
     if (!user) return
@@ -145,6 +150,80 @@ export default function SettingsPage() {
                 <p><strong>Email:</strong> {user.email}</p>
                 <p><strong>Name:</strong> {user.user_metadata?.full_name || 'Not provided'}</p>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Usage & Limits */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5" />
+                Usage & Limits
+              </CardTitle>
+              <CardDescription>
+                Track your token usage and limits
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {tokenLoading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading usage data...
+                </div>
+              ) : subscription?.subscribed ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Token Usage</span>
+                    <Badge variant="default">Unlimited</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    As a Premium subscriber, you have unlimited access to adventures.
+                  </p>
+                  <div className="text-xs text-muted-foreground">
+                    Total tokens used: {tokenUsage.toLocaleString()}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium">Tokens Used</span>
+                      <span className="text-muted-foreground">
+                        {tokenUsage.toLocaleString()} / {TOKEN_LIMIT.toLocaleString()}
+                      </span>
+                    </div>
+                    <Progress 
+                      value={(tokenUsage / TOKEN_LIMIT) * 100} 
+                      className="h-2"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>{((tokenUsage / TOKEN_LIMIT) * 100).toFixed(1)}% used</span>
+                      <span>{(TOKEN_LIMIT - tokenUsage).toLocaleString()} remaining</span>
+                    </div>
+                  </div>
+                  
+                  {tokenUsage >= TOKEN_LIMIT * 0.8 && (
+                    <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-md">
+                      <p className="text-sm text-amber-800 dark:text-amber-200">
+                        {tokenUsage >= TOKEN_LIMIT 
+                          ? "You've reached your token limit. Upgrade to Premium for unlimited adventures!"
+                          : "You're approaching your token limit. Consider upgrading to Premium for unlimited access."
+                        }
+                      </p>
+                    </div>
+                  )}
+
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={refreshTokenUsage}
+                    disabled={tokenLoading}
+                  >
+                    {tokenLoading && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
+                    Refresh Usage
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
 

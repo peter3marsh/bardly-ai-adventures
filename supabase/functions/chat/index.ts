@@ -49,6 +49,37 @@ export async function handler(req: Request) {
 
     const { adventureId, message } = await req.json()
 
+    // Check if user is premium subscriber
+    const { data: subscriber } = await supabaseClient
+      .from('subscribers')
+      .select('subscribed')
+      .eq('user_id', user.id)
+      .single()
+
+    const isPremium = subscriber?.subscribed || false
+
+    // Check token limit for free users
+    if (!isPremium) {
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('token_usage')
+        .eq('id', user.id)
+        .single()
+
+      const currentTokenUsage = profile?.token_usage || 0
+      const TOKEN_LIMIT = 100000
+
+      if (currentTokenUsage >= TOKEN_LIMIT) {
+        return new Response(
+          JSON.stringify({ error: 'LIMIT_EXCEEDED', message: 'Token limit reached. Please upgrade to Premium for unlimited adventures.' }),
+          {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        )
+      }
+    }
+
     // Get all messages for this adventure for full context
     const { data: messages } = await supabaseClient
       .from('messages')
