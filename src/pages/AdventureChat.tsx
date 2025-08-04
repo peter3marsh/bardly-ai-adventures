@@ -162,8 +162,13 @@ const AdventureChat = () => {
       })
 
       if (response.error) {
-        // Check if it's a token limit error
-        if (response.error.error === 'LIMIT_EXCEEDED') {
+        console.log('Response error structure:', response.error)
+        
+        // Check if it's a token limit error - handle both direct message and nested structure
+        const errorMessage = response.error.message || response.error.error || response.error
+        console.log('Error message:', errorMessage)
+        
+        if (errorMessage === 'LIMIT_EXCEEDED' || (response.error.message && response.error.message.includes('LIMIT_EXCEEDED'))) {
           setShowPaywall(true)
           return
         }
