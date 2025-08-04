@@ -67,6 +67,9 @@ export const Header = () => {
                   <DropdownMenuItem onClick={handleMyAdventures}>
                     My Adventures
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/settings')}>
+                    Settings
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={signOut}>
                     Sign Out
                   </DropdownMenuItem>
