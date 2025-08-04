@@ -5,11 +5,9 @@ import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
 import { useState } from 'react'
 
-interface PaywallScreenProps {
-  onClose: () => void
-}
+interface PaywallScreenProps {}
 
-export const PaywallScreen = ({ onClose }: PaywallScreenProps) => {
+export const PaywallScreen = ({}: PaywallScreenProps) => {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
 
@@ -66,22 +64,13 @@ export const PaywallScreen = ({ onClose }: PaywallScreenProps) => {
             </div>
           </div>
 
-          <div className="space-y-3">
-            <Button 
-              onClick={handleUpgrade} 
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? 'Opening checkout...' : 'Upgrade to Premium'}
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={onClose}
-              className="w-full"
-            >
-              Close
-            </Button>
-          </div>
+          <Button 
+            onClick={handleUpgrade} 
+            disabled={loading}
+            className="w-full"
+          >
+            {loading ? 'Opening checkout...' : 'Upgrade to Premium'}
+          </Button>
         </CardContent>
       </Card>
     </div>

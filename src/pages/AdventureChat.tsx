@@ -246,7 +246,7 @@ const AdventureChat = () => {
 
         <div className="flex-1 flex flex-col relative">
           {showPaywall && (
-            <PaywallScreen onClose={() => setShowPaywall(false)} />
+            <PaywallScreen />
           )}
           <>
             <ScrollArea className="flex-1 p-6">
