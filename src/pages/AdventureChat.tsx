@@ -73,7 +73,11 @@ const AdventureChat = () => {
   }, [user, subscription, subscriptionLoading, tokenUsage, tokenLoading])
 
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
-    messagesEndRef.current?.scrollIntoView({ behavior })
+    messagesEndRef.current?.scrollIntoView({ 
+      behavior, 
+      block: 'nearest',
+      inline: 'nearest'
+    })
   }
 
   const fetchAdventures = async () => {
@@ -269,7 +273,7 @@ const AdventureChat = () => {
             <PaywallScreen />
           )}
           <>
-            <ScrollArea className="flex-1 h-full p-6">
+            <div className="flex-1 min-h-0 overflow-y-auto p-6">
               <div className="max-w-4xl mx-auto">
                 {messagesLoading ? (
                   <div className="flex items-center justify-center h-32">
@@ -307,7 +311,7 @@ const AdventureChat = () => {
                 )}
                 <div ref={messagesEndRef} />
               </div>
-            </ScrollArea>
+            </div>
 
             <div className="p-4">
               <form onSubmit={sendMessage} className="max-w-4xl mx-auto">
