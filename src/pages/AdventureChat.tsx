@@ -269,7 +269,7 @@ const AdventureChat = () => {
             <PaywallScreen />
           )}
           <>
-            <ScrollArea className="flex-1 p-6">
+            <ScrollArea className="flex-1 h-full p-6">
               <div className="max-w-4xl mx-auto">
                 {messagesLoading ? (
                   <div className="flex items-center justify-center h-32">
