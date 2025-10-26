@@ -19,6 +19,7 @@ interface Message {
   content: string
   sender: 'user' | 'ai'
   created_at: string
+  pending?: boolean
 }
 
 interface Adventure {
@@ -56,7 +57,7 @@ const AdventureChat = () => {
   }, [user, adventureId])
 
   useEffect(() => {
-    scrollToBottom()
+    scrollToBottom('smooth')
   }, [messages])
 
   // Check for token limit on page load
@@ -71,8 +72,8 @@ const AdventureChat = () => {
     }
   }, [user, subscription, subscriptionLoading, tokenUsage, tokenLoading])
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    messagesEndRef.current?.scrollIntoView({ behavior })
   }
 
   const fetchAdventures = async () => {
@@ -154,6 +155,19 @@ const AdventureChat = () => {
     setCurrentInput('')
     setIsLoading(true)
 
+    // Create optimistic user message with temporary ID
+    const optimisticMessage: Message = {
+      id: `temp-${Date.now()}`,
+      content: messageContent,
+      sender: 'user',
+      created_at: new Date().toISOString(),
+      pending: true
+    }
+
+    // Add user message immediately for instant feedback
+    setMessages(prev => [...prev, optimisticMessage])
+    scrollToBottom('auto') // Instant scroll for user message
+
     try {
       let currentAdventureId = adventureId
 
@@ -161,6 +175,8 @@ const AdventureChat = () => {
       if (!currentAdventureId) {
         const newAdventure = await createNewAdventure()
         if (!newAdventure) {
+          // Remove optimistic message on failure
+          setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id))
           setIsLoading(false)
           return
         }
@@ -184,12 +200,14 @@ const AdventureChat = () => {
         
         if (errorMessage === 'LIMIT_EXCEEDED' || (response.error.message && response.error.message.includes('LIMIT_EXCEEDED'))) {
           setShowPaywall(true)
+          // Remove optimistic message
+          setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id))
           return
         }
         throw response.error
       }
 
-      // Refresh messages to show the new conversation
+      // Refresh messages to get real IDs and AI response
       await fetchMessages()
       
       // Update adventure timestamp
@@ -200,6 +218,8 @@ const AdventureChat = () => {
         
       fetchAdventures()
     } catch (error) {
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id))
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
@@ -267,14 +287,23 @@ const AdventureChat = () => {
                     </p>
                   </div>
                 ) : (
-                  messages.map((message) => (
-                    <ChatMessage
-                      key={message.id}
-                      content={message.content}
-                      isUser={message.sender === 'user'}
-                      timestamp={message.created_at}
-                    />
-                  ))
+                  <>
+                    {messages.map((message) => (
+                      <ChatMessage
+                        key={message.id}
+                        content={message.content}
+                        isUser={message.sender === 'user'}
+                        timestamp={message.created_at}
+                      />
+                    ))}
+                    {isLoading && (
+                      <div className="flex justify-start mb-4">
+                        <div className="bg-muted rounded-lg px-4 py-3 max-w-[80%]">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
                 <div ref={messagesEndRef} />
               </div>
